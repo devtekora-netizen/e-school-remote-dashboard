@@ -134,54 +134,62 @@ export default function MasterAdminPage() {
           <div className="flex items-center gap-4">
               <button 
                 onClick={async () => {
-                   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-                   const allowedChars = chars;
-                   
-                   let keyBase = "ESCHM"; // 5 chars
-                   let segments = [];
-                   let currentSum = 0;
-                   
-                   // Somme de ESCHM
-                   for(let i=0; i<keyBase.length; i++) currentSum += keyBase.charCodeAt(i);
+                   try {
+                     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+                     const allowedChars = chars;
+                     
+                     let keyBase = "ESCHM"; // 5 chars
+                     let segments = [];
+                     let currentSum = 0;
+                     
+                     // Somme de ESCHM
+                     for(let i=0; i<keyBase.length; i++) currentSum += keyBase.charCodeAt(i);
 
-                   // Générer 2 segments de 5
-                   for(let s=0; s<2; s++) {
-                     let seg = "";
-                     for(let i=0; i<5; i++) {
+                     // Générer 2 segments de 5
+                     for(let s=0; s<2; s++) {
+                       let seg = "";
+                       for(let i=0; i<5; i++) {
+                         const c = allowedChars[Math.floor(Math.random() * allowedChars.length)];
+                         seg += c;
+                         currentSum += c.charCodeAt(0);
+                       }
+                       segments.push(seg);
+                     }
+
+                     // Générer le dernier segment (4 chars + 1 checksum char)
+                     let lastSeg = "";
+                     for(let i=0; i<4; i++) {
                        const c = allowedChars[Math.floor(Math.random() * allowedChars.length)];
-                       seg += c;
+                       lastSeg += c;
                        currentSum += c.charCodeAt(0);
                      }
-                     segments.push(seg);
-                   }
-
-                   // Générer le dernier segment (4 chars + 1 checksum char)
-                   let lastSeg = "";
-                   for(let i=0; i<4; i++) {
-                     const c = allowedChars[Math.floor(Math.random() * allowedChars.length)];
-                     lastSeg += c;
-                     currentSum += c.charCodeAt(0);
-                   }
-                   
-                   // Trouver le 5ème char pour que (currentSum + charCode) % 7 == 0
-                   let checkChar = "";
-                   for(let i=0; i<allowedChars.length; i++) {
-                     if((currentSum + allowedChars.charCodeAt(i)) % 7 === 0) {
-                       checkChar = allowedChars[i];
-                       break;
+                     
+                     // Trouver le 5ème char pour que (currentSum + charCode) % 7 == 0
+                     let checkChar = "";
+                     for(let i=0; i<allowedChars.length; i++) {
+                       if((currentSum + allowedChars.charCodeAt(i)) % 7 === 0) {
+                         checkChar = allowedChars[i];
+                         break;
+                       }
                      }
-                   }
-                   lastSeg += checkChar;
-                   
-                   const finalKey = `ESCHM-${segments[0]}-${segments[1]}-${lastSeg}`;
-                   
-                   const res = await fetch('/api/license', {
-                     method: 'POST',
-                     headers: { 'Content-Type': 'application/json' },
-                     body: JSON.stringify({ masterKey, newKey: finalKey })
-                   });
-                   if (res.ok) {
-                     alert(`Nouvelle clé générée avec succès :\n\n${finalKey}\n\nCopiez-là pour le client.`);
+                     lastSeg += checkChar;
+                     
+                     const finalKey = `ESCHM-${segments[0]}-${segments[1]}-${lastSeg}`;
+                     
+                     const res = await fetch('/api/license', {
+                       method: 'POST',
+                       headers: { 'Content-Type': 'application/json' },
+                       body: JSON.stringify({ masterKey, newKey: finalKey })
+                     });
+                     
+                     if (res.ok) {
+                       alert(`Nouvelle clé générée avec succès :\n\n${finalKey}\n\nCopiez-là pour le client.`);
+                     } else {
+                       const errData = await res.json();
+                       alert(`Erreur Serveur : ${errData.error || 'Inconnue'}`);
+                     }
+                   } catch (err: any) {
+                     alert(`Erreur de génération : ${err.message}`);
                    }
                 }}
                 className="bg-accent hover:opacity-90 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-accent/20 transition-all active:scale-95"
