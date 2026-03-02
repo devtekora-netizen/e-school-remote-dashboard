@@ -134,7 +134,7 @@ export default function MasterAdminPage() {
           <div className="flex items-center gap-4">
               <button 
                 onClick={async () => {
-                   const key = `ESCH-${Math.random().toString(36).substring(2, 7).toUpperCase()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+                   const key = `ESCHM-${Math.random().toString(36).substring(2, 7).toUpperCase()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
                    const res = await fetch('/api/license', {
                      method: 'POST',
                      headers: { 'Content-Type': 'application/json' },
