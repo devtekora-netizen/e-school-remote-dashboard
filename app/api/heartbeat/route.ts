@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // Persistence en mémoire pour les sessions actives
 const globalForHeartbeat = global as unknown as { 
   activeSessions: Record<string, Record<string, number>> // schoolId -> { sessionId: lastSeenTimestamp }

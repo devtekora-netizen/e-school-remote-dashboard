@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { logEvent } from "@/lib/logger";
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 // Clé "Maître" pour l'entreprise
 const MASTER_API_KEY = process.env.MASTER_API_KEY || "E-SCHOOL-PRO-MASTER-2026";
 
