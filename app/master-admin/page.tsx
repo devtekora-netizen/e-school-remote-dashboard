@@ -243,8 +243,10 @@ export default function MasterAdminPage() {
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] uppercase text-slate-600 font-black mb-1">Recettes Globales</p>
-                                        <p className="text-emerald-400 font-bold">{data.stats?.totalRecettes?.toLocaleString() || 0} $</p>
+                                        <p className="text-[10px] uppercase text-slate-600 font-black mb-1">Restauration</p>
+                                        <p className="text-white font-bold">
+                                            {data.receivedAt ? "Activée" : "Jamais"}
+                                        </p>
                                     </div>
                                 </div>
                             </div>

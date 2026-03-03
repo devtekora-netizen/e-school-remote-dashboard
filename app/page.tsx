@@ -175,10 +175,12 @@ export default function Dashboard() {
     attendanceRate: 0,
     teachersPresent: 0,
     teachersAbsent: 0,
-    dailyRevenue: 0,
-    totalRecettes: 0,
-    totalDepenses: 0,
-    balance: 0
+    totalRecettesUSD: 0,
+    totalRecettesCDF: 0,
+    totalDepensesUSD: 0,
+    totalDepensesCDF: 0,
+    balanceUSD: 0,
+    balanceCDF: 0
   };
 
   const optionData = data?.distribution?.options 
@@ -242,19 +244,22 @@ export default function Dashboard() {
               <StatCard 
                 icon={<TrendingUp className="text-blue-400" />}
                 label="Recettes Totales"
-                value={`${displayStats.totalRecettes.toLocaleString('fr-FR')} $`}
+                valueUSD={displayStats.totalRecettesUSD}
+                valueCDF={displayStats.totalRecettesCDF}
                 trend="Année Scolaire"
               />
               <StatCard 
                 icon={<DollarSign className="text-rose-400" />}
                 label="Dépenses Totales"
-                value={`${displayStats.totalDepenses.toLocaleString('fr-FR')} $`}
+                valueUSD={displayStats.totalDepensesUSD}
+                valueCDF={displayStats.totalDepensesCDF}
                 trend="Année Scolaire"
               />
               <StatCard 
-                icon={<Wallet className={`text-${displayStats.balance >= 0 ? 'emerald' : 'rose'}-400`} />}
+                icon={<Wallet className={`text-${(displayStats.balanceUSD >= 0 && displayStats.balanceCDF >= 0) ? 'emerald' : 'rose'}-400`} />}
                 label="Solde Net (Balance)"
-                value={`${displayStats.balance.toLocaleString('fr-FR')} $`}
+                valueUSD={displayStats.balanceUSD}
+                valueCDF={displayStats.balanceCDF}
                 trend="État Global"
               />
             </div>
@@ -639,11 +644,11 @@ function ListView({ title, data, type }: { title: string, data: any[], type: 'st
       case 'teachers':
         return ["Nom Complet", "Qualification", "Téléphone", "Email", "Genre"];
       case 'payroll':
-        return ["Personnel", "Type", "Salaire", "Primes/Bonus", "Période", "Date"];
+        return ["Personnel", "Type", "Salaire", "Primes/Bonus", "Devise", "Période", "Date"];
       case 'fees':
-        return ["Élève", "Type de Frais", "Montant", "Période", "Date", "Observation"];
+        return ["Élève", "Type de Frais", "Montant", "Devise", "Période", "Date", "Observation"];
       case 'transactions':
-        return ["Type", "Catégorie", "Description", "Montant", "Date", "Méthode"];
+        return ["Type", "Catégorie", "Description", "Montant", "Devise", "Date", "Méthode"];
       case 'grades':
         return ["Élève", "Cours", "Période", "Cote", "Maximum", "Pourcentage"];
       default:
@@ -711,8 +716,9 @@ function ListView({ title, data, type }: { title: string, data: any[], type: 'st
                   {type === 'payroll' && (
                     <>
                       <td className="px-6 py-4"><span className={`px-2 py-1 rounded-md text-[10px] font-bold ${item.type === 'ENSEIGNANT' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>{item.type}</span></td>
-                      <td className="px-6 py-4 font-bold text-slate-200">{item.amount.toLocaleString()} $</td>
-                      <td className="px-6 py-4 text-slate-400">+{(item.prime + item.bonus).toLocaleString()} $</td>
+                      <td className="px-6 py-4 font-bold text-slate-200">{item.amount?.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-slate-400">+{(item.prime + item.bonus)?.toLocaleString()}</td>
+                      <td className="px-6 py-4"><span className="text-xs font-black text-accent">{item.currency || 'USD'}</span></td>
                       <td className="px-6 py-4 text-slate-400">{item.month} {item.year}</td>
                       <td className="px-6 py-4 text-slate-500 text-xs">{item.date}</td>
                     </>
@@ -721,7 +727,8 @@ function ListView({ title, data, type }: { title: string, data: any[], type: 'st
                   {type === 'fees' && (
                     <>
                       <td className="px-6 py-4 text-slate-400">{item.type}</td>
-                      <td className="px-6 py-4 font-bold text-emerald-400">{item.amount.toLocaleString()} $</td>
+                      <td className="px-6 py-4 font-bold text-emerald-400">{item.amount?.toLocaleString()}</td>
+                      <td className="px-6 py-4"><span className="text-xs font-black text-emerald-500">{item.currency || 'USD'}</span></td>
                       <td className="px-6 py-4 text-slate-400">{item.month} {item.year}</td>
                       <td className="px-6 py-4 text-slate-500 text-xs">{item.date}</td>
                       <td className="px-6 py-4 text-slate-500 italic text-xs">{item.obs || '---'}</td>
@@ -737,7 +744,8 @@ function ListView({ title, data, type }: { title: string, data: any[], type: 'st
                       </td>
                       <td className="px-6 py-4 text-slate-400">{item.category}</td>
                       <td className="px-6 py-4 text-slate-300 italic">{item.description}</td>
-                      <td className="px-6 py-4 font-bold text-slate-200">{item.amount.toLocaleString()} $</td>
+                      <td className="px-6 py-4 font-bold text-slate-200">{item.amount?.toLocaleString()}</td>
+                      <td className="px-6 py-4"><span className="text-xs font-black text-slate-400">{item.currency || 'USD'}</span></td>
                       <td className="px-6 py-4 text-slate-500 text-xs">{item.date}</td>
                       <td className="px-6 py-4 text-slate-400 font-medium">{item.method}</td>
                     </>
@@ -780,17 +788,24 @@ function ListView({ title, data, type }: { title: string, data: any[], type: 'st
   );
 }
 
-function StatCard({ icon, label, value, trend }: { icon: React.ReactNode, label: string, value: string | number, trend: string }) {
+function StatCard({ icon, label, valueUSD, valueCDF, trend }: { icon: React.ReactNode, label: string, valueUSD: number, valueCDF: number, trend: string }) {
   return (
     <div className="glass rounded-3xl p-6 shadow-lg border border-white/5 hover:border-white/10 transition-all hover:translate-y--1 group">
       <div className="bg-slate-800/50 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors group-hover:bg-slate-800">
         {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { size: 24 }) : icon}
       </div>
       <p className="text-slate-400 text-sm font-medium">{label}</p>
-      <div className="flex items-baseline gap-2 mt-1">
-        <h2 className="text-3xl font-bold tracking-tight">{value}</h2>
+      <div className="space-y-1 mt-2">
+        <div className="flex items-baseline justify-between transition-all">
+          <h2 className="text-2xl font-black tracking-tight text-white">{valueUSD?.toLocaleString('fr-FR')}</h2>
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">USD</span>
+        </div>
+        <div className="flex items-baseline justify-between opacity-80">
+          <h2 className="text-xl font-bold tracking-tight text-slate-300">{valueCDF?.toLocaleString('fr-FR')}</h2>
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">CDF</span>
+        </div>
       </div>
-      <p className="text-emerald-400 text-xs font-semibold mt-2 flex items-center gap-1">
+      <p className="text-emerald-400 text-xs font-semibold mt-4 flex items-center gap-1">
         <TrendingUp size={12} /> {trend}
       </p>
     </div>
