@@ -642,7 +642,7 @@ function ListView({ title, data, type }: { title: string, data: any[], type: 'st
       case 'students':
         return ["Nom Complet", "Genre", "Option", "Promotion", "Classe"];
       case 'teachers':
-        return ["Nom Complet", "Qualification", "Téléphone", "Email", "Genre"];
+        return ["Nom Complet", "Matricule", "Qualification", "Téléphone", "Email", "Genre"];
       case 'payroll':
         return ["Personnel", "Type", "Salaire", "Primes/Bonus", "Devise", "Période", "Date"];
       case 'fees':
@@ -650,7 +650,7 @@ function ListView({ title, data, type }: { title: string, data: any[], type: 'st
       case 'transactions':
         return ["Type", "Catégorie", "Description", "Montant", "Devise", "Date", "Méthode"];
       case 'grades':
-        return ["Élève", "Cours", "Période", "Cote", "Maximum", "Pourcentage"];
+        return ["Élève", "Cours", "Enseignant", "Période", "Cote", "Maximum", "Pourcentage"];
       default:
         return [];
     }
@@ -704,8 +704,9 @@ function ListView({ title, data, type }: { title: string, data: any[], type: 'st
                     </>
                   )}
 
-                  {type === 'teachers' && (
+                   {type === 'teachers' && (
                     <>
+                      <td className="px-6 py-4 text-slate-200 font-bold">{item.matricule || '---'}</td>
                       <td className="px-6 py-4 text-slate-400">{item.qualification}</td>
                       <td className="px-6 py-4 text-slate-400">{item.phone}</td>
                       <td className="px-6 py-4 text-slate-400">{item.email}</td>
@@ -751,9 +752,10 @@ function ListView({ title, data, type }: { title: string, data: any[], type: 'st
                     </>
                   )}
 
-                  {type === 'grades' && (
+                   {type === 'grades' && (
                     <>
                       <td className="px-6 py-4 text-slate-300 font-bold">{item.courseName}</td>
+                      <td className="px-6 py-4 text-slate-400 italic text-xs">{item.teacherName || '---'}</td>
                       <td className="px-6 py-4">
                         <span className="bg-blue-500/10 text-blue-400 px-2 py-1 rounded text-xs font-black">{item.period}</span>
                       </td>
