@@ -52,7 +52,11 @@ export async function POST(request: Request) {
       .insert([{ key: newKey.toUpperCase() }]);
 
     if (error) {
-       return NextResponse.json({ error: "Échec de la génération: " + error.message }, { status: 500 });
+       console.error("[LICENSE_GEN_ERROR]", error);
+       return NextResponse.json({ 
+         error: "Échec de la génération: " + error.message,
+         hint: "Vérifiez la connexion réseau ou les variables SUPABASE_URL / KEY sur Vercel."
+       }, { status: 500 });
     }
 
     await logEvent('LICENSE_GEN', 'MASTER', `Nouvelle clé générée : ${newKey.substring(0, 8)}...`);
