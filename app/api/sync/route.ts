@@ -94,6 +94,12 @@ export async function GET(request: Request) {
       .order('created_at', { ascending: false })
       .limit(100);
 
+    // Récupérer toutes les licences générées
+    const { data: licenses, error: licenseError } = await supabase
+      .from('licenses')
+      .select('*')
+      .order('created_at', { ascending: false });
+
     // Re-formater pour correspondre à ce que le Dashboard Master attend (Map de ID -> Data)
     const schoolsMap: Record<string, any> = {};
     schools?.forEach(s => {
@@ -115,7 +121,8 @@ export async function GET(request: Request) {
     return NextResponse.json({
       role: "MASTER_ADMIN",
       schools: schoolsMap,
-      logs: logsMapped
+      logs: logsMapped,
+      licenses: licenses || []
     });
   }
 
