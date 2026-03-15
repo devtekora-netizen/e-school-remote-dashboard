@@ -42,8 +42,8 @@ export async function POST(request: Request) {
   const { masterKey, newKey } = await request.json();
 
   // Seule l'entreprise peut générer des clés avec sa MASTER_KEY
-  if (masterKey !== MASTER_API_KEY) {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+  if (masterKey?.trim() !== MASTER_API_KEY.trim()) {
+    return NextResponse.json({ error: "Non autorisé (Clé Maître incorrecte)" }, { status: 403 });
   }
 
   if (newKey) {

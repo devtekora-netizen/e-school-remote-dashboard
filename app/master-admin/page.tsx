@@ -15,7 +15,7 @@ export default function MasterAdminPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/sync?apiKey=${masterKey}`);
+      const res = await fetch(`/api/sync?apiKey=${encodeURIComponent(masterKey.trim())}`);
       if (res.ok) {
         const data = await res.json();
         if (data.role === "MASTER_ADMIN") {
@@ -135,7 +135,7 @@ export default function MasterAdminPage() {
               <button 
                 onClick={async () => {
                    try {
-                     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+                     const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // Removed 'L' as it's not in the Desktop regex
                      const allowedChars = chars;
                      
                      let keyBase = "ESCHM"; // 5 chars
@@ -176,10 +176,10 @@ export default function MasterAdminPage() {
                      
                      const finalKey = `ESCHM-${segments[0]}-${segments[1]}-${lastSeg}`;
                      
-                     const res = await fetch('/api/license', {
+                      const res = await fetch('/api/license', {
                        method: 'POST',
                        headers: { 'Content-Type': 'application/json' },
-                       body: JSON.stringify({ masterKey, newKey: finalKey })
+                       body: JSON.stringify({ masterKey: masterKey.trim(), newKey: finalKey })
                      });
                      
                      if (res.ok) {
